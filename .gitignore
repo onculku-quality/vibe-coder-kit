@@ -58,3 +58,17 @@ coverage/
 
 # Kilo plans (generated)
 .kilo/plans/*.md
+
+# Expo
+.expo/
+web-build/
+expo-env.d.ts
+*.tsbuildinfo
+
+# NativeWind
+nativewind-env.d.ts
+
+# Android / iOS (Faz 9)
+android/
+ios/
+.gradle/
