@@ -32,11 +32,7 @@ function RootLayoutNav() {
     return <LoadingState label="Hazırlanıyor..." />;
   }
 
-  if (!session) {
-    return <LoadingState label="Yönlendiriliyor..." />;
-  }
-
-  if (!profile) {
+  if (!profile && session) {
     return (
       <ErrorState
         message="Profil bilgisi bulunamadı. Hesabınız tam olarak oluşturulmamış olabilir."
@@ -45,16 +41,30 @@ function RootLayoutNav() {
     );
   }
 
-  if (isSubscriptionLocked(profile, institution)) {
+  // Platform admin: abonelik kilidi ve kurum kontrolü uygulanmaz.
+  if (profile?.role === 'platform_admini') {
+    return (
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)/login" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="platform/institutions"
+          options={{ headerShown: true, title: 'Kurum Yönetimi' }}
+        />
+      </Stack>
+    );
+  }
+
+  if (session && isSubscriptionLocked(profile, institution)) {
     return <LockScreen />;
   }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(auth)/login" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen
-        name="platform"
+        name="platform/institutions"
         options={{ headerShown: true, title: 'Kurum Yönetimi' }}
       />
     </Stack>

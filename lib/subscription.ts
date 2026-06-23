@@ -5,7 +5,7 @@ export function isSubscriptionActive(
   institution: Institution | null
 ): boolean {
   if (!profile) return false;
-  if (profile.role === 'platform_admini') return true;
+  if (String(profile.role).trim() === 'platform_admini') return true;
   if (!institution) return false;
   if (!institution.subscription_active_until) return false;
   return new Date(institution.subscription_active_until) > new Date();

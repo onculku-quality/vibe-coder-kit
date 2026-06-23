@@ -92,6 +92,24 @@ export default function TabsLayout() {
           tabBarIcon: ({ color }) => <User size={24} color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="plans/[id]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="audits/[id]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="difs/[id]"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

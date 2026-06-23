@@ -4,6 +4,13 @@
 gibi standartlara göre denetim planları, toplantılar, saha denetimleri ve DİF
 kayıtlarını dijitalleştirir.
 
+## Ürün ve Yol Haritası
+
+- **Ürün Vizyonu ve Özellikler:** [`docs/PRODUCT.md`](docs/PRODUCT.md)
+- **Geliştirme Yol Haritası (Fazlar):** [`docs/ROADMAP.md`](docs/ROADMAP.md)
+- **Kurulum Rehberi:** [`docs/FAZ1-KURULUM.md`](docs/FAZ1-KURULUM.md)
+- **Yayınlama Rehberi:** [`docs/YAYINLAMA.md`](docs/YAYINLAMA.md)
+
 ## Teknoloji Yığını
 
 - **Expo** (SDK 56) + Expo Router + TypeScript
@@ -14,15 +21,11 @@ kayıtlarını dijitalleştirir.
 
 ## Hızlı Başlangıç
 
-Detaylı adım adım rehber için: [`docs/FAZ1-KURULUM.md`](docs/FAZ1-KURULUM.md)
-
 ```bash
 npm install
 cp .env.example .env          # Supabase URL + anon key girin
 npm start                     # Expo Go ile QR tara
 ```
-
-Yayınlama (Play Store + Play Billing) için: [`docs/YAYINLAMA.md`](docs/YAYINLAMA.md)
 
 ## Geliştirme Komutları
 
@@ -58,27 +61,7 @@ docs/              Kurulum + yayınlama rehberleri
 assets/            İkon, splash görseller
 ```
 
-## Geliştirme Komutları
 
-```bash
-npm run typecheck    # TypeScript tip kontrolü
-npm run lint         # ESLint
-npm start            # Expo dev server
-```
-
-## Klasör Yapısı
-
-```
-app/              Expo Router sayfaları
-  (auth)/         Giriş + kayıt ekranı
-  (tabs)/         Alt tab navigasyon (Ana Sayfa, Profil)
-  platform/       Platform admini: kurum yönetimi
-components/        Yeniden kullanılabilir UI bileşenleri
-lib/               Supabase istemcisi, auth, tipler, yardımcılar
-constants/         Rol, durum etiketleri (TR)
-supabase/migrations/  SQL migration dosyaları
-assets/            İkon, splash görselleri
-```
 
 ## Roller
 

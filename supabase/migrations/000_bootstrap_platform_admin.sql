@@ -16,7 +16,7 @@
 
 INSERT INTO profiles (id, institution_id, name, role)
 VALUES (
-  'BURAYA-KULLANICI-UUID-YAZIN',
+  '02b8ddc3-7d8d-49fb-bcdd-ce90dabf551a',
   NULL,
   'Platform Yoneticisi',
   'platform_admini'

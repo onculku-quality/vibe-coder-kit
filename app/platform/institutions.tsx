@@ -11,6 +11,7 @@ import {
   Mail,
   User,
   Copy,
+  LogOut,
 } from 'lucide-react-native';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/lib/auth';
@@ -43,7 +44,7 @@ function isCodeActive(code: InviteCode): boolean {
 }
 
 export default function InstitutionsScreen() {
-  const { profile } = useAuth();
+  const { profile, signOut } = useAuth();
   const queryClient = useQueryClient();
 
   const [showForm, setShowForm] = useState(false);
@@ -218,6 +219,10 @@ export default function InstitutionsScreen() {
     setShowForm(false);
   }
 
+  async function handleSignOut() {
+    await signOut();
+  }
+
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50">
@@ -242,19 +247,28 @@ export default function InstitutionsScreen() {
       <ScrollView contentContainerClassName="px-5 py-5 gap-4">
         <View className="flex-row items-center justify-between">
           <Text className="text-2xl font-bold text-gray-800">Kurumlar</Text>
-          <Pressable
-            onPress={() => setShowForm(!showForm)}
-            className="flex-row items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2"
-          >
-            {showForm ? (
-              <X size={18} color="#fff" />
-            ) : (
-              <Plus size={18} color="#fff" />
-            )}
-            <Text className="text-sm font-semibold text-white">
-              {showForm ? 'İptal' : 'Yeni Kurum'}
-            </Text>
-          </Pressable>
+          <View className="flex-row items-center gap-2">
+            <Pressable
+              onPress={handleSignOut}
+              className="flex-row items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2"
+            >
+              <LogOut size={16} color="#dc2626" />
+              <Text className="text-sm font-semibold text-red-600">Çıkış Yap</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => setShowForm(!showForm)}
+              className="flex-row items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2"
+            >
+              {showForm ? (
+                <X size={18} color="#fff" />
+              ) : (
+                <Plus size={18} color="#fff" />
+              )}
+              <Text className="text-sm font-semibold text-white">
+                {showForm ? 'İptal' : 'Yeni Kurum'}
+              </Text>
+            </Pressable>
+          </View>
         </View>
 
         {showForm && (

@@ -137,6 +137,25 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=...
     - **Dokümantasyon düzeltmesi:** `YAYINLAMA.md` 4.3 — "elle aktif etme mantığı `lib/subscription.ts` içinde" diyordu ama aslında o dosyada yalnızca `isSubscriptionActive` / `isSubscriptionLocked` / `daysRemaining` helper'ları var. Manuel aktifleştirme `app/platform/institutions.tsx` `activateMutation`'ında. Bölüm güncellendi
     - **Dokümantasyon eklentisi:** Bölüm 5.3'e `--no-verify-jwt` notu ve "5.3.1 — İsteğe bağlı: CORS kısıtlama (`ALLOWED_ORIGIN` secret)" eklendi (JWT doğrulamasının fonksiyon içinde yapıldığı, CORS'un üretimde nasıl sıkılaştırılacağı)
   - **Henüz TODO (yayınlama aşamasında tamamlanacak):** Google Play Developer API OAuth2 + `purchases.subscriptionsv2.get` çağrısı + `institutions` tablosunda `subscription_status`/`subscription_active_until`/`play_purchase_token`/`play_subscription_id` güncellemesi (dosyada TODO yorumları işaretli). `play-rtdn-webhook` Edge Function'ı yazılmadı (Bölüm 5.4)
-- **Kaldığımız yer:** Faz 9 gözden geçirildi ve düzeltildi. Yayınlama aşamasında Google Play Developer API entegrasyonu + RTDN webhook'u (Faz 9.5 / Faz 10) eklenecek.
+- **Faz 10 EKLENDİ ✅:** RLS UPDATE policy hardening (privilege escalation kapama).
+  - `supabase/migrations/018_rls_update_with_check_hardening.sql` — 9 UPDATE policy'sine `institution_id` koruması (kayıt başka kuruma taşınamaz) + `profiles_update_own`'a `role` koruması (`IS NOT DISTINCT FROM` ile, NULL karşılaştırması doğru)
+  - Bulunan kritik güvenlik açıkları:
+    - **`profiles_update_own` privilege escalation:** Kullanıcı kendi `role`'ünü `denetci → admin` yapabiliyordu (Faz 1'den beri). `WITH CHECK (id = auth.uid())` sadece `id` kontrol ediyordu, role/enstitution_id üzerinde kısıt yoktu
+    - **Kurum taşıma:** 8 tabloda (`plans`/`meetings`/`audits`/`audit_answers`/`difs`/`standards`/`standard_questions`/`teams`) admin/bas_denetci kendi kurumundaki bir kaydın `institution_id`'sini başka kuruma UPDATE ile taşıyabiliyordu
+  - Migration doğrulandı: `pg_policies` `with_check` kolonu tüm 10 UPDATE policy'sinde doğru
+- **Test ortamı durumu (2026-06-23):**
+  - **DB:** 1 kurum (Batıgöz, `dbf7e54a-...`), 3 profil (2 admin + 1 platform_admini), 0 kullanıcı-veri standard/team/plan/audit/dif (son testlerde oluşturulan test verileri DB'de kaldı, `docs/TEST-CLEANUP.sql` ile temizlenebilir)
+  - **Davet kodları:** `2VA3-CDAU` (kullanıldı), `E7JN-MQFJ` (kullanıldı), `7YMF-HAKA` (kullanılmadı, expire 2026-06-29)
+  - **Test kullanıcıları:**
+    - `denetim-test3@gmail.com` / `Test1234!` (admin, son test user)
+    - `denetim-test2@gmail.com` / `Test1234!` (admin)
+    - `test@admin.com` (admin, email_confirmed_at null ama profile var)
+    - `admin@admin.com` (platform_admini)
+    - `test@test.com` / `test123` (ORPHAN — auth.users'ta var ama profiles'ta yok; temizlenmeli)
+  - **PostgREST sorunu:** Yeni ES256 access_token'lar `PGRST301: None of the keys was able to decode the JWT` hatası alıyor (Supabase tarafı key-rotation geçiş sorunu). Auth (`/auth/v1/*`) çalışıyor, PostgREST (`/rest/v1/*`) çalışmıyor. **Supabase Support bileti gerekli** (veya birkaç saat bekleyip otomatik propagate olmasını umma). Geçici çözüm: SQL Editor ile tüm doğrulamalar yapılabilir
+  - **Service_role JWT:** Eski formatta (`eyJ...hJ7...`), yeni key sisteminde de çalışmıyor. **Dashboard'dan rotate edilmeli** (güvenlik temizliği)
+  - **mailer_autoconfirm: true** — test için harika ama production'da kapatılmalı
+  - **Tasarım notu (Faz 11/12 önerisi):** RLS INSERT policy'ler `institution_id` body'de zorunlu tutuyor (`standards_insert_admin`, `teams_insert_admin`, `plans_insert_admin_basdenetci` vb.) → client `institution_id` göndermemeli, `BEFORE INSERT` trigger ile otomatik atanmalı. `audit_answers` INSERT sadece `on_audit_created` trigger'ına izinli, client PATCH ile günceller (doğru tasarım)
+- **Kaldığımız yer:** Faz 10 RLS hardening uygulandı. Yayınlama öncesi PostgREST sorunu çözülmeli + service_role rotate + mailer_autoconfirm kapatılmalı. Google Play Developer API + RTDN webhook (Faz 9.5) henüz yapılmadı.
 - **Plan:** `C:\Users\oncu.ulku\.local\share\kilo\plans\1782108081066-denetim-saas-mobil-plani.md`
-- **Kurulum rehberi:** `docs/FAZ1-KURULUM.md` · **Yayınlama rehberi:** `docs/YAYINLAMA.md`
+- **Kurulum rehberi:** `docs/FAZ1-KURULUM.md` · **Yayınlama rehberi:** `docs/YAYINLAMA.md` · **Test sorguları:** `docs/TEST-SORGU.sql` · **RLS doğrulama:** `docs/TEST-RLS-CHECK.sql`
